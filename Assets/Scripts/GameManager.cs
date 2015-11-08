@@ -4,9 +4,10 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 
     public static GameManager instance = null;
-
+	public int tiempoParaPartida;
+	
     void Awake()
-    {
+    {			
         if(instance == null)
         {
             instance = this;
@@ -47,12 +48,29 @@ public class GameManager : MonoBehaviour {
 
         Application.LoadLevel("menuTemas");
     }
-
+	
+	//estas son las cosas del menú principal
     public void irAMenu()
+    {
+        Application.LoadLevel("menuPrincipal");
+    }
+	
+	public void irAJugar()
     {
         Application.LoadLevel("menuModos");
     }
-
+	
+	public void irACreditos()
+    {
+        Application.LoadLevel("menuCreditos");
+    }
+	
+	public void Salir()
+    {
+        Application.Quit();
+    }
+	//Acá se acaban las cosas del menú principal
+	
     public void RepetirJuego()
     {
         Debug.Log("Reiniciando");
@@ -74,4 +92,12 @@ public class GameManager : MonoBehaviour {
 
         Application.LoadLevel("juego");
     }
+	
+	//esto es lo del menú de contrareloj
+	void elegirTiempo(int tiempeishon)
+	{
+		instance.tiempoParaPartida = tiempeishon;
+        instance.modo = Modo.contrareloj;
+        Application.LoadLevel("menuTemas");
+	}
 }
