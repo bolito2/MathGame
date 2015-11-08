@@ -28,18 +28,20 @@ public class juego: MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
         CrearPregunta();
 
-        posInicialBarra = barra.anchoredPosition.x;
+        posInicialBarra = posInicialBarra;
         posFinalBarra = -1150;
         diferencia = posFinalBarra - posInicialBarra;
-
     }
-
+	
+	public int tiempoPartida; //en vez de usar "120", cambié eso por una variable (Esta) que se toma desde el GameManager para el tiempo. así solo tener que -
+	//cambiar esta variable en vez del script entero
+	
     void Update()
     {
         switch (gameManager.modo)
         {
             case GameManager.Modo.contrareloj :
-                int segundos = (int)120 - (int)Time.timeSinceLevelLoad;
+                int segundos = (int)tiempoPartida - (int)Time.timeSinceLevelLoad;
                 int minutos = 0;
                 while(segundos >= 60)
                 {
@@ -56,9 +58,9 @@ public class juego: MonoBehaviour {
                     tiempo.text = "0:00";
                 }
 
-                barra.anchoredPosition = new Vector2(posFinalBarra - diferencia * (120 - Time.time)/120 , barra.anchoredPosition.y);
+                barra.anchoredPosition = new Vector2(posFinalBarra - diferencia * (tiempoPartida - Time.time)/tiempoPartida , barra.anchoredPosition.y);
 
-                if(Time.timeSinceLevelLoad > 120)
+                if(Time.timeSinceLevelLoad > tiempoPartida)
                 {
                     JuegoTerminado();
                 }
@@ -138,6 +140,7 @@ public class juego: MonoBehaviour {
     int numFallos = 0;
     public Text fallos;
     public Text fallosFinal;
+    public Text textoCosa;
     void Fallo()
     {
         audioSource.clip = error;
@@ -175,7 +178,38 @@ public class juego: MonoBehaviour {
 
         aciertosFinal.text = "Preguntas acertadas : " + numAciertos;
         fallosFinal.text = "Preguntas falladas : " + numFallos;
+		
+		//Borralo si quieres. esto es un mensaje dependiendo de tu puntuación
+		if(numAciertos >= numFallos)
+		{
+			textoCosa.text = "Lo haz hecho bien! sigue así.";
+		}
 
+		if(numAciertos <= numFallos)
+		{
+			textoCosa.text = "Sigue intentando.";
+		}
+		
+		if(numAciertos == numFallos)
+		{
+			textoCosa.text = "Puedes hacerlo mejor.";
+		}
+		
+		if(numAciertos == 0 && numFallos >= numAciertos)
+		{
+			textoCosa.text = "Realmente estás intentando?";
+		}
+		
+		if(numFallos == 0 && numAciertos >= numFallos)
+		{
+			textoCosa.text = "Perfecto!";
+		}
+		
+		if(numFallos == 0 && numAciertos == 0)
+		{
+			textoCosa.text = "Estás ahí?";
+		}
+		
         input.interactable = false;
     }
 }
