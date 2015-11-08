@@ -50,9 +50,24 @@ public class GameManager : MonoBehaviour {
 
     public void irAMenu()
     {
+        Application.LoadLevel("menuPrincipal");
+    }
+	
+	public void irAJugar()
+    {
         Application.LoadLevel("menuModos");
     }
-
+	
+	public void irACreditos()
+    {
+        Application.LoadLevel("menuCreditos");
+    }
+	
+	public void Salir()
+    {
+        Application.Quit();
+    }
+	
     public void RepetirJuego()
     {
         Debug.Log("Reiniciando");
