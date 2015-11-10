@@ -3,11 +3,26 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
+    //La instancia del GameManager, refiriendose al objeto que hay en el inspector
+    //y que contiene todos los datos de la partida.
     public static GameManager instance = null;
+
+//El tiempo que dura la partida. Ahora el valor lo recoge el script de jueg directamente,
+//en vez de cambiar el valor desde aquí.
 	public int tiempoParaPartida;
+			
+	public int preguntasDePartida;
 	
+	public bool dificultadElegir1, dificultadElegir2, dificultadElegir3;
+
+
+    //Coches
+    public int numElementosEcuacion;
+
     void Awake()
-    {			
+    {	
+    	//Aquí es para hacer que el objeto no se destruya al cambiar de escena.
+
         if(instance == null)
         {
             instance = this;
@@ -19,6 +34,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+//Los modos a elegir
     public enum Modo
     {
         contrareloj,
@@ -26,6 +42,7 @@ public class GameManager : MonoBehaviour {
     }
     public Modo modo;
 
+//Los temas a elegir
     public enum Tema
     {
         aritmetica,
@@ -38,6 +55,7 @@ public class GameManager : MonoBehaviour {
         switch (stringModo)
         {
             case "contrareloj":
+                //Recuerda utilizar el instance para todo lo que quieras que perpetúe
                 instance.modo = Modo.contrareloj;
                 break;
 
@@ -94,10 +112,48 @@ public class GameManager : MonoBehaviour {
     }
 	
 	//esto es lo del menú de contrareloj
-	void elegirTiempo(int tiempeishon)
+	public void elegirTiempo(int tiempeishon)
 	{
 		instance.tiempoParaPartida = tiempeishon;
         instance.modo = Modo.contrareloj;
         Application.LoadLevel("menuTemas");
+	}
+	
+	public void elegirPreguntas(int cantidadPreguntas)
+	{
+		instance.preguntasDePartida = cantidadPreguntas;
+        instance.modo = Modo.puntos;
+        Application.LoadLevel("menuTemas");
+	}
+	
+	public void dificultad1()
+	{
+		instance.tema = Tema.aritmetica;
+		instance.dificultadElegir1 = true;
+        Application.LoadLevel("juego");
+	}
+	
+	public void dificultad2()
+	{
+		instance.tema = Tema.aritmetica;
+		instance.dificultadElegir2 = true;
+        Application.LoadLevel("juego");
+	}
+	
+	public void dificultad3()
+	{
+		instance.tema = Tema.aritmetica;
+		instance.dificultadElegir3 = true;
+        Application.LoadLevel("juego");
+	}
+	
+	public void modoCrono()
+	{
+        Application.LoadLevel("contrareloj");
+	}
+	
+	public void modoPuntos()
+	{
+        Application.LoadLevel("puntos");
 	}
 }

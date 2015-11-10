@@ -4,10 +4,11 @@ using System.Collections;
 
 public class juego: MonoBehaviour {
 
-    int num1, num2;
+    int num1, num2, cantidadPreguntas;
     public Text operacion;
     public InputField input;
     public AudioClip error, success;
+	public bool dif1, dif2, dif3;
     AudioSource audioSource;
 
     private GameManager gameManager;
@@ -17,6 +18,7 @@ public class juego: MonoBehaviour {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
+//Este es el array de los cuatro operadores
     string[] signos = new string[4] {"+" , "-" , "x", "÷"};
     string signo;
     public Text tiempo;
@@ -33,13 +35,38 @@ public class juego: MonoBehaviour {
         diferencia = posFinalBarra - posInicialBarra;
 
         tiempoPartida = gameManager.tiempoParaPartida;
+		
+		if(gameManager.dificultadElegir1 == true)
+		{
+			dif1 = true;
+			dif2 = false;
+			dif3 = false;
+		}	
+		
+		if(gameManager.dificultadElegir2 == true)
+		{
+			dif1 = false;
+			dif2 = true;
+			dif3 = false;
+		}	
+		
+		if(gameManager.dificultadElegir3 == true)
+		{
+			dif1 = false;
+			dif2 = false;
+			dif3 = true;
+		}
+
+//Se recoge el tiempo que durará la partida elegido en el menú
+        tiempoPartida = gameManager.tiempoParaPartida;
+		cantidadPreguntas = gameManager.preguntasDePartida;
     }
 	
-	public int tiempoPartida; //en vez de usar "120", cambié eso por una variable (Esta) que se toma desde el GameManager para el tiempo. así solo tener que -
-	//cambiar esta variable en vez del script entero
+	public int tiempoPartida;
 	
     void Update()
     {
+    	//El comportamiento del juego cambia dependiendo del modo
         switch (gameManager.modo)
         {
             case GameManager.Modo.contrareloj :
@@ -50,6 +77,7 @@ public class juego: MonoBehaviour {
                     segundos -= 60;
                     minutos++;
                 }
+                //Contador del tiempo restante
                 if(segundos < 10)
                     tiempo.text = minutos.ToString() + ":0" + segundos.ToString();
                 else
@@ -60,36 +88,89 @@ public class juego: MonoBehaviour {
                     tiempo.text = "0:00";
                 }
 
+				//Se cambia la posición y el color de la barra
                 barra.anchoredPosition = new Vector2(posFinalBarra - diferencia * (tiempoPartida - Time.timeSinceLevelLoad)/tiempoPartida , barra.anchoredPosition.y);
                 barra.GetComponent<RawImage>().color = Color.Lerp(Color.red, Color.green, (tiempoPartida - Time.timeSinceLevelLoad) / tiempoPartida);
 
                 if(Time.timeSinceLevelLoad > tiempoPartida)
                 {
+                	//Si se acaba el tiempo se invoca el metodo de juego terminado
                     JuegoTerminado();
                 }
                 break;
 
-            default: break;
+           case GameManager.Modo.puntos :
+				int preguntas = (int)cantidadPreguntas;
+				if(preguntas >= 1)
+				{
+					tiempo.text = preguntas.ToString() + " restantes." ;
+				}
+	
+				if(preguntas == 1)
+				{
+					tiempo.text = "ultima pregunta";
+				}
+				
+				if(preguntas == 0)
+				{
+					tiempo.text = "Ya no hay preguntas";
+					JuegoTerminado();
+				}
+				break;
+			
+			default: break;
         }
     }
 
     void CrearPregunta()
     {
+    	//Las preguntas cambian depende del tema
         switch (gameManager.tema)
         {
         case GameManager.Tema.aritmetica :
+            //Se selecciona el input para que no haga falta clickearlo
+            //cada vez que se haga una respuesta
             input.Select();
             input.ActivateInputField();
 
+//Se eligen dos numeros aleatorios para las operaciones
+//Aqui es donde dependiendo de la dificultad se modificarian los numeros
+		if(dif1 == true)
+		{
             num1 = Random.Range(1, 100);
             num2 = Random.Range(1, 100);
-
+		}
+		
+		if(dif2 == true)
+		{
+            num1 = Random.Range(1, 300);
+            num2 = Random.Range(1, 300);
+		}		
+		
+		if(dif3 == true)
+		{
+            num1 = Random.Range(1, 600);
+            num2 = Random.Range(1, 600);
+		}
+//Se elige el signo aleatoriamente
+//Si el signo es de división, se cambia el primer número por una multiplicacion del segundo,
+//para hacer que el resultado de la división sea exacto.
+//Si es una multiplicación, al menos en dificultad uno el primer factor se cambia
+//por un número del 1 al 10 para hacerlo mas fácil
             signo = signos[Random.Range(0, 4)];
-            if (signo == "÷")
+            if (signo == "÷"&& dif1 == true)
                 num1 = num2 * Random.Range(1, 11);
-            if (signo == "x")
+            if (signo == "÷"&& dif2 == true)
+                num1 = num2 * Random.Range(1, 31);
+            if (signo == "÷"&& dif3 == true)
+                num1 = num2 * Random.Range(1, 61);
+            if (signo == "x" && dif1 == true)
                 num1 = Random.Range(1, 11);
-
+            if (signo == "x" && dif2 == true)
+                num1 = Random.Range(1, 30);
+			if (signo == "÷" && num1 == 0 && num2 == 0)
+				CrearPregunta();
+//Se cambia el texto de el indicador de la operación
             operacion.text = num1 + " " + signo + " " + num2;
             break;
 
@@ -99,13 +180,17 @@ public class juego: MonoBehaviour {
 
     public void ResultadoEscrito()
     {
+    	//Este método se ejecuta al pulsar Enter, si el input no esta vacío
         if (input.text != "")
         {
             switch (gameManager.tema)
             {
+            	//Lo mismo, depende del modo se calcula el resultado de distinta manera
                 case GameManager.Tema.aritmetica:
                     switch (signo)
                     {
+                    	//Depende del signo se hace una operación u otra, y se invocan los métodos
+                    	//Acierto() y Fallo() depende del input
                         case "+":
                             if (input.text == (num1 + num2).ToString())
                                 Acierto();
@@ -146,6 +231,9 @@ public class juego: MonoBehaviour {
     public Text textoCosa;
     void Fallo()
     {
+    	//Se reproduce el sonido de erro y se vuelve a crear la pregunta.
+    	//Además se aumenta en 1 el número de fallos y su contador.
+    	
         audioSource.clip = error;
         audioSource.volume = 0.3f;
         audioSource.Play();
@@ -155,6 +243,7 @@ public class juego: MonoBehaviour {
 
         CrearPregunta();
 
+        cantidadPreguntas--;
         numFallos++;
         fallos.text = numFallos.ToString();
     }
@@ -164,12 +253,14 @@ public class juego: MonoBehaviour {
     public Text aciertosFinal;
     void Acierto()
     {
+    	//Lo mismo que en el Fallo() pero con los aciertos.
         audioSource.clip = success;
         audioSource.volume = 1;
         audioSource.Play();
 
         CrearPregunta();
-
+		
+		cantidadPreguntas--;
         numAciertos++;
         aciertos.text = numAciertos.ToString();
     }
@@ -177,6 +268,8 @@ public class juego: MonoBehaviour {
     public GameObject panelFinal;
     void JuegoTerminado()
     {
+    	//Al terminar el juego se activa el panel de partida finalizada con sus cosos.
+    	
         panelFinal.SetActive(true);
 
         aciertosFinal.text = "Preguntas acertadas : " + numAciertos;
@@ -185,7 +278,7 @@ public class juego: MonoBehaviour {
 		//Borralo si quieres. esto es un mensaje dependiendo de tu puntuación
 		if(numAciertos >= numFallos)
 		{
-			textoCosa.text = "Lo haz hecho bien! sigue así.";
+			textoCosa.text = "!Lo haz hecho bien! sigue así.";
 		}
 
 		if(numAciertos <= numFallos)
@@ -200,17 +293,17 @@ public class juego: MonoBehaviour {
 		
 		if(numAciertos == 0 && numFallos >= numAciertos)
 		{
-			textoCosa.text = "Realmente estás intentando?";
+			textoCosa.text = "¿Realmente estás intentando?";
 		}
 		
 		if(numFallos == 0 && numAciertos >= numFallos)
 		{
-			textoCosa.text = "Perfecto!";
+			textoCosa.text = "!Perfecto!";
 		}
 		
 		if(numFallos == 0 && numAciertos == 0)
 		{
-			textoCosa.text = "Estás ahí?";
+			textoCosa.text = "¿Estás ahí?";
 		}
 		
         input.interactable = false;
