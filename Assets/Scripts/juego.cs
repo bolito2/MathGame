@@ -34,6 +34,7 @@ public class juego: MonoBehaviour {
         posFinalBarra = -1150;
         diferencia = posFinalBarra - posInicialBarra;
 
+//Se recoge el tiempo que durará la partida elegido en el menú
         tiempoPartida = gameManager.tiempoParaPartida;
 		
 		if(gameManager.dificultadElegir1 == true)
@@ -88,7 +89,11 @@ public class juego: MonoBehaviour {
                     tiempo.text = "0:00";
                 }
 
+<<<<<<< HEAD
 				//Se cambia la posición y el color de la barra
+=======
+//Se cambia la posición y el color de la barra
+>>>>>>> 13dfde5a32b03b096ed8fa1a061df3434bcd04d2
                 barra.anchoredPosition = new Vector2(posFinalBarra - diferencia * (tiempoPartida - Time.timeSinceLevelLoad)/tiempoPartida , barra.anchoredPosition.y);
                 barra.GetComponent<RawImage>().color = Color.Lerp(Color.red, Color.green, (tiempoPartida - Time.timeSinceLevelLoad) / tiempoPartida);
 
@@ -135,6 +140,7 @@ public class juego: MonoBehaviour {
 
 //Se eligen dos numeros aleatorios para las operaciones
 //Aqui es donde dependiendo de la dificultad se modificarian los numeros
+<<<<<<< HEAD
 		if(dif1 == true)
 		{
             num1 = Random.Range(1, 100);
@@ -152,6 +158,10 @@ public class juego: MonoBehaviour {
             num1 = Random.Range(1, 600);
             num2 = Random.Range(1, 600);
 		}
+
+            num1 = Random.Range(1, 100);
+            num2 = Random.Range(1, 100);
+
 //Se elige el signo aleatoriamente
 //Si el signo es de división, se cambia el primer número por una multiplicacion del segundo,
 //para hacer que el resultado de la división sea exacto.
@@ -166,10 +176,12 @@ public class juego: MonoBehaviour {
                 num1 = num2 * Random.Range(1, 61);
             if (signo == "x" && dif1 == true)
                 num1 = Random.Range(1, 11);
+
             if (signo == "x" && dif2 == true)
                 num1 = Random.Range(1, 30);
 			if (signo == "÷" && num1 == 0 && num2 == 0)
 				CrearPregunta();
+
 //Se cambia el texto de el indicador de la operación
             operacion.text = num1 + " " + signo + " " + num2;
             break;
