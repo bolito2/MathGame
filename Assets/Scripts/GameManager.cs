@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour {
 	public int tiempoParaPartida;
 	public int preguntasDePartida;
 	
-	public bool dificultadElegir1, dificultadElegir2, dificultadElegir3;
+	public bool dificultadElegir1, dificultadElegir2, dificultadElegir3, modoKrypto, modoExamen;
 	
     void Awake()
     {	
@@ -51,6 +51,8 @@ public class GameManager : MonoBehaviour {
             case "contrareloj":
                 //Recuerda utilizar el instance para todo lo que quieras que perpetúe
                 instance.modo = Modo.contrareloj;
+				instance.modoKrypto = false;
+				instance.modoExamen = true;
                 break;
 
             default:
@@ -110,6 +112,8 @@ public class GameManager : MonoBehaviour {
 	{
 		instance.tiempoParaPartida = tiempeishon;
         instance.modo = Modo.contrareloj;
+		instance.modoKrypto = false;
+		instance.modoExamen = true;
         Application.LoadLevel("menuTemas");
 	}
 	
@@ -117,6 +121,8 @@ public class GameManager : MonoBehaviour {
 	{
 		instance.preguntasDePartida = cantidadPreguntas;
         instance.modo = Modo.puntos;
+		instance.modoKrypto = true;
+		instance.modoExamen = false;
         Application.LoadLevel("menuTemas");
 	}
 	
