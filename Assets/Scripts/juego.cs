@@ -89,11 +89,9 @@ public class juego: MonoBehaviour {
                     tiempo.text = "0:00";
                 }
 
-<<<<<<< HEAD
 				//Se cambia la posición y el color de la barra
-=======
+
 //Se cambia la posición y el color de la barra
->>>>>>> 13dfde5a32b03b096ed8fa1a061df3434bcd04d2
                 barra.anchoredPosition = new Vector2(posFinalBarra - diferencia * (tiempoPartida - Time.timeSinceLevelLoad)/tiempoPartida , barra.anchoredPosition.y);
                 barra.GetComponent<RawImage>().color = Color.Lerp(Color.red, Color.green, (tiempoPartida - Time.timeSinceLevelLoad) / tiempoPartida);
 
@@ -140,7 +138,6 @@ public class juego: MonoBehaviour {
 
 //Se eligen dos numeros aleatorios para las operaciones
 //Aqui es donde dependiendo de la dificultad se modificarian los numeros
-<<<<<<< HEAD
 		if(dif1 == true)
 		{
             num1 = Random.Range(1, 100);
